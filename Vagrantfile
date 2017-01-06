@@ -15,10 +15,8 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-16.04"
 
   # Provisions
-  config.vm.provision :shell, path: "provisions/lemp.sh"
-  config.vm.provision :shell, path: "provisions/git.sh"
-  config.vm.provision :shell, path: "provisions/phpmyadmin.sh"
-  
+  config.vm.provision :shell, path: "provisions/setup_system.sh"
+  config.vm.provision :shell, path: "provisions/setup_project.sh"  
   
   #config.vm.provision "shell", inline: '
   #  mkdir -p /home/it/.composer
