@@ -14,6 +14,7 @@ rm -rf /var/www/pma.local/tmp 2> /dev/null
 
 
 
+
 # configure phpmyadmin
 #mv /var/www/pma.local/html/config.sample.inc.php /var/www/pma.local/html/config.inc.php
 #sed -i 's/a8b7c6d/SvbfgkJj54b5gbg/' /var/www/pma.local/html/config.inc.php
