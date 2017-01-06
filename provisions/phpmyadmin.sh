@@ -13,6 +13,7 @@ rm -rf /var/www/pma.local/tmp 2> /dev/null
 # mysql -u root -p root CREATE DATABASE `vagrant_1` CHARACTER SET utf8 COLLATE utf8_general_ci
 
 
+
 # configure phpmyadmin
 #mv /var/www/pma.local/html/config.sample.inc.php /var/www/pma.local/html/config.inc.php
 #sed -i 's/a8b7c6d/SvbfgkJj54b5gbg/' /var/www/pma.local/html/config.inc.php
