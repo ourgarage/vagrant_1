@@ -18,6 +18,13 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, path: "provisions/lemp.sh"
   config.vm.provision :shell, path: "provisions/git.sh"
   config.vm.provision :shell, path: "provisions/phpmyadmin.sh"
+  
+  
+  #config.vm.provision "shell", inline: '
+  #  mkdir -p /home/it/.composer
+  #  echo {\"github-oauth\": {\"github.com\": \"'+user_config['git']['composer_access_token']+'\"}} > /home/it/.composer/auth.json
+  #  chown -R it:it /home/it/.composer
+  #'
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
