@@ -11,7 +11,16 @@ rm -rf /var/www/pma/tmp 2> /dev/null
 
 # Create DATABASE
 # mysql -u root -p root CREATE DATABASE `vagrant_1` CHARACTER SET utf8 COLLATE utf8_general_ci
+cat > /root/.my.cnf << EOF
+[client]
+user = root
+password = root
+host = localhost
+EOF
 
+cp /root/.my.cnf /var/www/pma/.my.cnf
+
+mysql -e "CREATE DATABASE VAGRANT_1 CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci";
 
 
 
