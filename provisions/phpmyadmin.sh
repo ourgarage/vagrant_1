@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 # install phpmyadmin
-mkdir -p /var/www/pma.local/html
-mkdir -p /var/www/pma.local/logs
-mkdir -p /var/www/pma.local/tmp/unpack
-wget -O /var/www/pma.local/tmp/pma.tar.gz https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
-tar -xvf /var/www/pma.local/tmp/pma.tar.gz -C /var/www/pma.local/tmp/unpack
-cp -a /var/www/pma.local/tmp/unpack/php*/* /var/www/pma.local/html
-rm -rf /var/www/pma.local/tmp 2> /dev/null
+mkdir -p /var/www/pma.dev/html
+mkdir -p /var/www/pma.dev/logs
+mkdir -p /var/www/pma.dev/tmp/unpack
+wget -O /var/www/pma.dev/tmp/pma.tar.gz https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
+tar -xvf /var/www/pma.dev/tmp/pma.tar.gz -C /var/www/pma.dev/tmp/unpack
+cp -a /var/www/pma.dev/tmp/unpack/php*/* /var/www/pma.dev/html
+rm -rf /var/www/pma.dev/tmp 2> /dev/null
 
 # Create DATABASE
 # mysql -u root -p root CREATE DATABASE `vagrant_1` CHARACTER SET utf8 COLLATE utf8_general_ci
