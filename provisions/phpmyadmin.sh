@@ -10,7 +10,7 @@ cp -a /var/www/pma.local/tmp/unpack/php*/* /var/www/pma.local/html
 rm -rf /var/www/pma.local/tmp 2> /dev/null
 
 # Create DATABASE
-mysql -u root -p root CREATE DATABASE `vagrant_1` CHARACTER SET utf8 COLLATE utf8_general_ci
+# mysql -u root -p root CREATE DATABASE `vagrant_1` CHARACTER SET utf8 COLLATE utf8_general_ci
 
 
 # configure phpmyadmin
