@@ -7,8 +7,8 @@ DBHOST=localhost
 DBNAME=vagrant_1
 DBUSER=root
 DBPASSWD=root
+SUPERVISOR_DEFAULT=laravel_worker
 
-# NGINX settings
 NGINX_DEFAULT="server {
     root /home/html/$DEFAULT_PROJECT/public;
     index index.php index.html index.htm;
@@ -90,6 +90,31 @@ NGINX_PROJECT="server {
 }
 "
 
+REDIS="[Unit]
+	Description=Redis In-Memory Data Store
+	After=network.target
+	[Service]
+	User=redis
+	Group=redis
+	ExecStart=/usr/local/bin/redis-server /etc/redis/redis.conf
+	ExecStop=/usr/local/bin/redis-cli shutdown
+	Restart=always
+	[Install]
+	WantedBy=multi-user.target
+"
+
+SUPERVISOR="
+	[program:$SUPERVISOR_DEFAULT]
+	process_name=%(program_name)s_%(process_num)02d
+	command=php /var/www/html/artisan queue:work --sleep=5 --tries=3
+	autostart=true
+	autorestart=true
+	user=root
+	numprocs=4
+	redirect_stderr=true
+	stdout_logfile=/var/www/logs/$SUPERVISOR_DEFAULT.log
+"
+
 # Create folders
 mkdir -p /var/www/$DEFAULT_PROJECT/ /var/www/$DEFAULT_PROJECT/logs
 mkdir -p /var/www/$PMA_NAME/source /var/www/$PMA_NAME/logs /var/www/$PMA_NAME/tmp/unpack
@@ -132,13 +157,57 @@ apt-get install -y git 2> /dev/null
   #EOC
 
 # Add lines to hosts file
-
  echo "127.0.0.1 $PMA_NAME" >> /etc/hosts
  echo "127.0.0.1 $DEFAULT_PROJECT" >> /etc/hosts
 
-# NGINX setting
+# NGINX & PHP settings
  echo "$NGINX_DEFAULT" > /etc/nginx/sites-available/default
  echo "$NGINX_PMA" > /etc/nginx/sites-available/$PMA_NAME
  echo "$NGINX_PROJECT" > /etc/nginx/sites-available/$DEFAULT_PROJECT
+ rm /etc/nginx/sites-enabled/*
+ ln -s /etc/nginx/sites-available/* /etc/nginx/sites-enabled/
+ 
+ sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php/7.0/fpm/php.ini
+ 
  service nginx restart
+ service php7.1-fpm restart
+ 
+# REDIS
+ apt-get -y install build-essential tcl redis-server 2> dev/null
+	#sudo nano /etc/redis/redis.conf
+		#Меняем supervised no   на    supervised systemd
+		#Меняем dir ./   на    dir /var/lib/redis
+ echo "$REDIS" > /etc/systemd/system/redis.service
+ adduser --system --group --no-create-home redis
+ mkdir /var/lib/redis
+ chown redis:redis /var/lib/redis
+ chmod 770 /var/lib/redis
+ systemctl start redis
+ systemctl status redis
+ systemctl enable redis
+ 
+# SUPERVISOR:
+ apt-get install supervisor
+ service supervisor restart
+ echo "$SUPERVISOR" > /etc/supervisor/conf.d/$SUPERVISOR_DEFAULT.conf
+ supervisorctl reread
+ supervisorctl update
+ supervisorctl start $SUPERVISOR_DEFAULT:*
+ 
+# CRON
+ mkdir /etc/cron.d 2>/dev/null
+ echo "* * * * * php /var/www/$DEFAULT_PROJECT/html/artisan schedule:run >> /dev/null 2>&1" > /etc/cron.d/1111
+ service cron restart
+ 
+# NODE & YARN & GULP
+ apt-get install nodejs
+ apt-get install npm
+ 
+ npm install --global gulp-cli
+ npm install
+ 
+ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+ apt-get update
+ apt-get install yarn
  
