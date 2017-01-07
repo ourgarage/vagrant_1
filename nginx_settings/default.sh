@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-NGINX_DEFAULT="server {
+TEXT_BLOCK="server {
 
-    root /home/html/$DEFAULT_PROJECT/public;
+    root /home/html/aaaa/public;
     index index.php index.html index.htm;
 
     location ~ \.php$ {
@@ -19,3 +19,5 @@ NGINX_DEFAULT="server {
 
 }
 "
+
+echo "$TEXT_BLOCK" > "/etc/hosts"

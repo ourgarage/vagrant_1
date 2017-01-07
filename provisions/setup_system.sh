@@ -8,9 +8,8 @@ DBNAME=vagrant_1
 DBUSER=root
 DBPASSWD=root
 
-# Include scripts
+# NGINX settings
 NGINX_DEFAULT="server {
-
     root /home/html/$DEFAULT_PROJECT/public;
     index index.php index.html index.htm;
 
@@ -25,7 +24,69 @@ NGINX_DEFAULT="server {
     location / {
         try_files $uri $uri/ /index.php$is_args$args;
     }
+}
+"
 
+NGINX_PMA="server {
+    listen 80;
+    server_name $PMA_NAME;
+    root /home/mv/www/$PMA_NAME/source;
+    index index.php index.html index.htm;
+    access_log /home/mv/www/$PMA_NAME/logs/access.log;
+    error_log /home/mv/www/$PMA_NAME/logs/error.log;
+    autoindex off;
+    allow all;
+ 
+   location ~ \.php$ {
+        try_files $uri =404;
+        root /home/mv/www/$PMA_NAME/source/;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+        # With php5-cgi alone:
+        #fastcgi_pass 127.0.0.1:9000;
+        # With php5-fpm:
+        fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;
+        #include fastcgi_params;
+	include fastcgi.conf;
+    }
+    location / {
+        root /home/mv/www/$PMA_NAME/source/;
+        index  index.php index.html;
+    }
+}
+"
+
+NGINX_PROJECT="server {
+    listen   80;
+    server_name DEFAULT_PROJECT;
+    access_log /home/mv/www/DEFAULT_PROJECT/logs/access.log;
+    error_log /home/mv/www/DEFAULT_PROJECT/logs/error.log;
+    autoindex off;
+    allow all;
+ 
+    gzip on;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript;
+ 
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        root /home/mv/www/DEFAULT_PROJECT/html/public/;
+        # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+        fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;
+        fastcgi_buffers 16 16k;
+        fastcgi_buffer_size 32k;
+        #include fastcgi_params;
+	include fastcgi.conf;
+    }
+    location / {
+        index  index.php index.html;
+        root /home/mv/www/DEFAULT_PROJECT/html/public/;
+        rewrite ^/(.*)/$ /$1 redirect;
+        if (!-e $request_filename){
+            rewrite ^(.*)$ /index.php;
+        }
+ 
+    }
 }
 "
 
@@ -77,3 +138,7 @@ apt-get install -y git 2> /dev/null
 
 # NGINX setting
  echo "$NGINX_DEFAULT" > /etc/nginx/sites-available/default
+ echo "$NGINX_PMA" > /etc/nginx/sites-available/$PMA_NAME
+ echo "$NGINX_PROJECT" > /etc/nginx/sites-available/$DEFAULT_PROJECT
+ service nginx restart
+ 
