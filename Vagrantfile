@@ -6,6 +6,16 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
+
+# Checks before starting the server up
+ # If SSH keys are not available
+  #if(File.exist?('keys/1111.txt'))
+    #p 'file or directory exists'
+  #else
+    #p 'file or directory not found'
+  #end
+  #exit 1
+
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
@@ -16,7 +26,7 @@ Vagrant.configure("2") do |config|
 
   # Provisions
   config.vm.provision :shell, path: "provisions/setup_system.sh"
-  config.vm.provision :shell, path: "provisions/setup_project.sh"  
+  # config.vm.provision :shell, path: "provisions/setup_project.sh"
   
   #config.vm.provision "shell", inline: '
   #  mkdir -p /home/it/.composer
