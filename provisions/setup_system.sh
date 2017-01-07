@@ -200,8 +200,8 @@ apt-get install -y git 2> /dev/null
  service cron restart
  
 # NODE & YARN & GULP
- apt-get install nodejs
- apt-get install npm
+ apt-get -y install nodejs
+ apt-get -y install npm
  
  npm install --global gulp-cli
  npm install
@@ -209,5 +209,5 @@ apt-get install -y git 2> /dev/null
  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
  echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
  apt-get update
- apt-get install yarn
+ apt-get -y install yarn
  
