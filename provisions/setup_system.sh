@@ -127,6 +127,7 @@ apt-add-repository ppa:ondrej/php -y
 apt-get update
 apt-get install -y mysql-server 2> /dev/null
 apt-get install -y nginx php7.1-fpm php7.1-mysql php7.1-gd php7.1-mcrypt php7.1-curl curl php7.1-mb php7.1-xml php7.1-zip 2> /dev/null
+apt-get install -y php-xdebug
 
 # install phpmyadmin
 wget -O /var/www/$PMA_NAME/tmp/pma.tar.gz https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
