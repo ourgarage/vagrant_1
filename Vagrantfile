@@ -1,44 +1,42 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
+require 'yaml'
 
 Vagrant.configure("2") do |config|
 
-# Checks before starting the server up
- # If SSH keys are not available
-  #if(File.exist?('keys/1111.txt'))
-    #p 'file or directory exists'
-  #else
-    #p 'file or directory not found'
-  #end
-  #exit 1
+    user_config = YAML.load_file 'user_config.yml'
+    
+    
+    config.vm.box = "bento/ubuntu-16.04"
 
-  config.vm.box = "bento/ubuntu-16.04"
+    config.vm.network "private_network", ip: "192.168.10.10"
+    
+    config.vm.hostname = "dev-container"
 
-  # Provisions
-  config.vm.provision :shell, path: "provisions/setup_system.sh"
-  config.vm.provision :shell, path: "provisions/setup_project.sh"
-  
-  config.vm.provision "file", source: "/vagrant/keys/1111.txt", destination: "/var/www/1111.txt"
-  
-  config.ssh.forward_agent = true
+    config.vm.synced_folder "data/mysql", "/var/lib/mysql", create: true
+    config.vm.synced_folder "data/www", "/var/www", create: true
 
-  # config.vm.box_check_update = false
+    config.vm.provision "shell", inline: 'cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys'
+    config.vm.provision "shell", path: "setup_system.sh"
+    config.vm.provision "shell", path: "setup_projects.sh"
+    config.vm.provision "shell", inline: 'su - it -c "git config --global url.ssh://git@github.com/.insteadOf https://github.com/"'
+    config.vm.provision "shell", inline: 'su - it -c "git config --global user.name ' + user_config['git']['username'] + '"'
+    config.vm.provision "shell", inline: 'su - it -c "git config --global user.email ' + user_config['git']['email'] + '"'
+    config.vm.provision "shell", inline: '
+        mkdir -p /home/it/.composer
+        echo {\"github-oauth\": {\"github.com\": \"'+user_config['git']['composer_access_token']+'\"}} > /home/it/.composer/auth.json
+        chown -R it:it /home/it/.composer
+    '
 
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+    config.ssh.username = "vagrant"
+    config.ssh.port = 22
+    config.ssh.private_key_path = ["./initial_ssh_key", user_config['ssh_private_key_path']]
+    config.ssh.forward_agent = true
 
-  config.vm.network "private_network", ip: "192.168.10.10"
 
-  # config.vm.network "public_network"
+    # config.vm.network "public_network"
 
-  config.vm.synced_folder "data/www", "/var/www", create: true
-  config.vm.synced_folder "data/nginx", "/etc/nginx/sites-enabled", create: true
+    config.vm.provider "virtualbox" do |vb|
+        vb.memory = 1024
+        vb.cpus = 2
+    end
 
-  config.vm.provider "virtualbox" do |vb|
-    vb.memory = 1024
-    vb.cpus = 2
-  end
-
-  # config.push.define "atlas" do |push|
-  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
-  # end
 end
