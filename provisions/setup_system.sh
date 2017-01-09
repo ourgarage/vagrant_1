@@ -122,12 +122,10 @@ mkdir -p /var/www/$PMA_NAME/source /var/www/$PMA_NAME/logs /var/www/$PMA_NAME/tm
 # Install LEMP
 debconf-set-selections <<< "mysql-server mysql-server/root_password password $DBPASSWD"
 debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DBPASSWD"
-apt-key update
 apt-add-repository ppa:ondrej/php -y
+apt-key update
 apt-get update
-apt-get install -y mysql-server 2> /dev/null
-apt-get install -y nginx php7.1-fpm php7.1-mysql php7.1-gd php7.1-mcrypt php7.1-curl curl php7.1-mb php7.1-xml php7.1-zip 2> /dev/null
-apt-get install -y php-xdebug
+apt-get install -y nginx mysql-server php7.1-fpm php7.1-mysql php7.1-gd php7.1-mcrypt php7.1-curl curl php7.1-mb php7.1-xml php7.1-zip php-xdebug 2> /dev/null
 
 # install phpmyadmin
 wget -O /var/www/$PMA_NAME/tmp/pma.tar.gz https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
