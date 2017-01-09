@@ -120,6 +120,7 @@ mkdir -p /var/www/$DEFAULT_PROJECT/ /var/www/$DEFAULT_PROJECT/logs
 mkdir -p /var/www/$PMA_NAME/source /var/www/$PMA_NAME/logs /var/www/$PMA_NAME/tmp/unpack
 
 # Install LEMP
+apt-get purge apache2 -у 2> /dev/null
 debconf-set-selections <<< "mysql-server mysql-server/root_password password $DBPASSWD"
 debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DBPASSWD"
 apt-add-repository ppa:ondrej/php -y
