@@ -32,21 +32,31 @@ NGINX_PMA="server {
 mkdir -p /var/www/pma/source /var/www/pma/logs /var/www/pma/tmp/unpack
 
 # Install LEMP
-apt-get purge apache2 -у 2> /dev/null
+echo "GITIOS > ADD PPA"
 debconf-set-selections <<< "mysql-server mysql-server/root_password password $DBPASSWD"
 debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DBPASSWD"
 apt-add-repository ppa:ondrej/php -y
 apt-key update
 apt-get update
-apt-get install -y nginx mysql-server php7.1-fpm php7.1-mysql php7.1-gd php7.1-mcrypt php7.1-curl curl php7.1-mb php7.1-xml php7.1-zip php-xdebug 2> /dev/null
+
+echo "GITIOS > INSTALL PHP"
+apt-get install -y php7.1-fpm php7.1-mysql php7.1-gd php7.1-mcrypt php7.1-curl curl php7.1-mb php7.1-xml php7.1-zip php-xdebug
+
+echo "GITIOS > INSTALL NGINX"
+apt-get install -y nginx
+
+echo "GITIOS > INSTALL MYSQL"
+apt-get install -y mysql-server
 
 # install phpmyadmin
+echo "GITIOS > INSTALL PHPMYADMIN"
 wget -O /var/www/pma/tmp/pma.tar.gz https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
 tar -xvf /var/www/pma/tmp/pma.tar.gz -C /var/www/pma/tmp/unpack
 cp -a /var/www/pma/tmp/unpack/php*/* /var/www/pma/source
 rm -rf /var/www/pma/tmp 2> /dev/null
 
 # Create DATABASE
+echo "GITIOS > CREATE DATABASE"
 cat > /root/.my.cnf << EOF
 [client]
 user = root
@@ -54,21 +64,25 @@ password = root
 host = localhost
 EOF
 
-cp /root/.my.cnf /home/it/.my.cnf
+mkdir /home/vagrant
+cp /root/.my.cnf /home/vagrant/.my.cnf
 
 # Install GIT
-apt-get install -y git 2> /dev/null
+echo "GITIOS > INSTALL GIT"
+apt-get install -y git
 
 # NGINX & PHP settings
+echo "GITIOS > NGINX & PHP SETTINGS"
 echo $NGINX_PMA > /etc/nginx/sites-available/pma.conf
 ln -s /etc/nginx/sites-available/pma.conf /etc/nginx/sites-enabled/pma.conf
 
-sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php/7.0/fpm/php.ini
+sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php/7.1/fpm/php.ini
 
 service nginx restart
 service php7.1-fpm restart
 
 # REDIS
+echo "GITIOS > INSTALL REDIS"
 apt-get -y install build-essential tcl redis-server 2> dev/null
     #sudo nano /etc/redis/redis.conf
     #Меняем supervised no   на    supervised systemd
@@ -88,6 +102,7 @@ systemctl enable redis
 # service cron restart
  
 # NODE & YARN & GULP
+echo "GITIOS > INSTALL NODE & YARN & GULP"
 curl -sL https://deb.nodesource.com/setup_7.x | -E bash -
 apt-get install -y nodejs
 apt-get install npm
