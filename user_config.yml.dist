@@ -1,6 +1,0 @@
-ssh_private_key_path: '~/.ssh/id_rsa'
-git:
-  username: ''
-  email: ''
-  # Generate new token here: https://github.com/settings/tokens
-  composer_access_token: ''
